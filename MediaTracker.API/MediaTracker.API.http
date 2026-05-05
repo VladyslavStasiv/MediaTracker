@@ -1,0 +1,18 @@
+@MediaTracker.API_HostAddress = http://localhost:5000
+
+GET {{MediaTracker.API_HostAddress}}/api/mediaitems
+Accept: application/json
+
+###
+
+POST {{MediaTracker.API_HostAddress}}/api/mediaitems
+Content-Type: application/json
+
+{
+  "title": "The King's Avatar",
+  "type": "Donghua",
+  "episodesWatched": 12,
+  "totalEpisodes": 40,
+  "status": "Watching",
+  "rating": 9
+}
