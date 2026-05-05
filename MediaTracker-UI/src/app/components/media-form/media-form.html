@@ -1,0 +1,69 @@
+<div style="padding: 20px; font-family: sans-serif; max-width: 500px;">
+  <h2>Add New Media</h2>
+
+  <form [formGroup]="mediaForm" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 15px;">
+
+    <div>
+      <label>Title:</label><br>
+      <input type="text" formControlName="title" style="width: 100%; padding: 8px;">
+
+      @if (mediaForm.get('title')?.hasError('pattern') && mediaForm.get('title')?.dirty) {
+        <small style="color: #D32F2F; margin-top: 5px; display: block;">
+          Please use English characters, numbers, and basic punctuation only.
+        </small>
+      }
+    </div>
+
+    <div>
+      <label>Type:</label><br>
+      <select formControlName="type" style="width: 100%; padding: 8px;">
+        <option value="Anime">Anime</option>
+        <option value="Donghua">Donghua</option>
+        <option value="Series">Series</option>
+        <option value="Movie">Movie</option>
+      </select>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+      <div style="flex: 1;">
+        <label>Episodes Watched:</label><br>
+        <input type="number" formControlName="episodesWatched" style="width: 100%; padding: 8px;">
+      </div>
+      <div style="flex: 1;">
+        <label>Total Episodes:</label><br>
+        <input type="number" formControlName="totalEpisodes" style="width: 100%; padding: 8px;">
+      </div>
+    </div>
+
+    <div>
+      <label>Status:</label><br>
+      <select formControlName="status" style="width: 100%; padding: 8px;">
+        <option value="Plan to Watch">Plan to Watch</option>
+        <option value="Watching">Watching</option>
+        <option value="Completed">Completed</option>
+        <option value="Dropped">Dropped</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Rating (0-10):</label><br>
+      <input type="number" formControlName="rating" style="width: 100%; padding: 8px;">
+    </div>
+
+    <div style="display: flex; gap: 10px; margin-top: 10px;">
+
+      <button type="submit"
+              [disabled]="mediaForm.invalid"
+              [ngStyle]="{
+                'background': mediaForm.invalid ? '#9E9E9E' : '#2E7D32',
+                'cursor': mediaForm.invalid ? 'not-allowed' : 'pointer'
+              }"
+              style="padding: 10px 20px; color: white; border: none;">
+        Save
+      </button>
+
+      <button type="button" (click)="cancel()" style="padding: 10px 20px; background: #C62828; color: white; border: none; cursor: pointer;">Cancel</button>
+    </div>
+
+  </form>
+</div>
