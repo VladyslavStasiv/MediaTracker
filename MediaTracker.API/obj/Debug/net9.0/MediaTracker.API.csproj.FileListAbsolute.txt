@@ -128,3 +128,4 @@ D:\4 курс\2_semester\Practice\MediaTracker.API\obj\Debug\net9.0\refint\Media
 D:\4 курс\2_semester\Practice\MediaTracker.API\obj\Debug\net9.0\MediaTracker.API.pdb
 D:\4 курс\2_semester\Practice\MediaTracker.API\obj\Debug\net9.0\MediaTracker.API.genruntimeconfig.cache
 D:\4 курс\2_semester\Practice\MediaTracker.API\obj\Debug\net9.0\ref\MediaTracker.API.dll
+D:\4 курс\2_semester\Practice\MediaTracker.API\obj\Debug\net9.0\MediaTracker.API.sourcelink.json

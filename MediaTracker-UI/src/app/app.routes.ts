@@ -4,5 +4,6 @@ import { MediaFormComponent } from './components/media-form/media-form';
 
 export const routes: Routes = [
   { path: '', component: MediaListComponent },
-  { path: 'add', component: MediaFormComponent }
+  { path: 'add', component: MediaFormComponent },
+  { path: 'edit/:id', component: MediaFormComponent }
 ];

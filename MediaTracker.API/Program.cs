@@ -35,6 +35,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowAngularDevClient");
 
+app.UseStaticFiles();
 app.MapControllers();
 
 app.Run();

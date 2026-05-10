@@ -1,0 +1,67 @@
+.form-container {
+  padding: 20px;
+  font-family: sans-serif;
+  max-width: 500px;
+}
+
+.media-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
+}
+
+.error-text {
+  color: #D32F2F;
+  margin-top: 5px;
+  display: block;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-save {
+  padding: 10px 20px;
+  background-color: #2E7D32;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+
+  &:disabled {
+    background-color: #9E9E9E;
+    cursor: not-allowed;
+  }
+}
+
+.btn-cancel {
+  padding: 10px 20px;
+  background-color: #C62828;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}

@@ -8,4 +8,5 @@ public class MediaItem
     public int TotalEpisodes { get; set; }
     public string Status { get; set; } = string.Empty; // Планую, Дивлюся, Завершено
     public int Rating { get; set; }
+    public string? ImageUrl { get; set; }
 }

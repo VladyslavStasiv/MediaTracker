@@ -1,1 +1,7 @@
 <router-outlet></router-outlet>
+
+@if (toastService.message()) {
+  <div class="toast" [class.toast-error]="toastService.isError()">
+    {{ toastService.message() }}
+  </div>
+}

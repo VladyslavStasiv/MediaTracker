@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MediaService, MediaItem } from '../../services/media';
+import { ToastService } from '../../services/toast';
 
 @Component({
   selector: 'app-media-form',
@@ -11,12 +12,17 @@ import { MediaService, MediaItem } from '../../services/media';
   templateUrl: './media-form.html',
   styleUrl: './media-form.scss'
 })
-export class MediaFormComponent {
+export class MediaFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly mediaService = inject(MediaService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly toastService = inject(ToastService);
 
   private readonly englishRegex = /^[\x20-\x7E]+$/;
+
+  isEditMode = false;
+  editItemId: number | null = null;
 
   mediaForm: FormGroup = this.fb.group({
     title: ['', [Validators.required, Validators.pattern(this.englishRegex)]],
@@ -27,17 +33,43 @@ export class MediaFormComponent {
     rating: [0, [Validators.min(0), Validators.max(10)]]
   });
 
+  ngOnInit(): void {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      this.isEditMode = true;
+      this.editItemId = Number(idParam);
+
+      this.mediaService.getMediaItem(this.editItemId).subscribe({
+        next: (data) => this.mediaForm.patchValue(data),
+        error: (err) => console.error('Error loading item:', err)
+      });
+    }
+  }
+
   onSubmit(): void {
     if (this.mediaForm.valid) {
-      const newItem: MediaItem = {
-        id: 0,
+      const itemData: MediaItem = {
+        id: this.editItemId || 0,
         ...this.mediaForm.value
       };
 
-      this.mediaService.addMediaItem(newItem).subscribe({
-        next: () => this.router.navigate(['/']),
-        error: (err) => console.error('Error adding item:', err)
-      });
+      if (this.isEditMode && this.editItemId) {
+        this.mediaService.updateMediaItem(this.editItemId, itemData).subscribe({
+          next: () => {
+            this.toastService.show('Item updated successfully!');
+            this.router.navigate(['/']);
+          },
+          error: (err) => console.error('Error updating item:', err)
+        });
+      } else {
+        this.mediaService.addMediaItem(itemData).subscribe({
+          next: () => {
+            this.toastService.show('Item added successfully!');
+            this.router.navigate(['/']);
+          },
+          error: (err) => console.error('Error adding item:', err)
+        });
+      }
     }
   }
 

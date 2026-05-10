@@ -1,22 +1,22 @@
-<div style="padding: 20px; font-family: sans-serif; max-width: 500px;">
-  <h2>Add New Media</h2>
+<div class="form-container">
+  <h2>{{ isEditMode ? 'Edit Media' : 'Add New Media' }}</h2>
 
-  <form [formGroup]="mediaForm" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 15px;">
+  <form [formGroup]="mediaForm" (ngSubmit)="onSubmit()" class="media-form">
 
-    <div>
-      <label>Title:</label><br>
-      <input type="text" formControlName="title" style="width: 100%; padding: 8px;">
+    <div class="form-group">
+      <label>Title:</label>
+      <input type="text" formControlName="title" class="form-control">
 
       @if (mediaForm.get('title')?.hasError('pattern') && mediaForm.get('title')?.dirty) {
-        <small style="color: #D32F2F; margin-top: 5px; display: block;">
+        <small class="error-text">
           Please use English characters, numbers, and basic punctuation only.
         </small>
       }
     </div>
 
-    <div>
-      <label>Type:</label><br>
-      <select formControlName="type" style="width: 100%; padding: 8px;">
+    <div class="form-group">
+      <label>Type:</label>
+      <select formControlName="type" class="form-control">
         <option value="Anime">Anime</option>
         <option value="Donghua">Donghua</option>
         <option value="Series">Series</option>
@@ -24,20 +24,20 @@
       </select>
     </div>
 
-    <div style="display: flex; gap: 10px;">
-      <div style="flex: 1;">
-        <label>Episodes Watched:</label><br>
-        <input type="number" formControlName="episodesWatched" style="width: 100%; padding: 8px;">
+    <div class="form-row">
+      <div class="form-group flex-1">
+        <label>Episodes Watched:</label>
+        <input type="number" formControlName="episodesWatched" class="form-control">
       </div>
-      <div style="flex: 1;">
-        <label>Total Episodes:</label><br>
-        <input type="number" formControlName="totalEpisodes" style="width: 100%; padding: 8px;">
+      <div class="form-group flex-1">
+        <label>Total Episodes:</label>
+        <input type="number" formControlName="totalEpisodes" class="form-control">
       </div>
     </div>
 
-    <div>
-      <label>Status:</label><br>
-      <select formControlName="status" style="width: 100%; padding: 8px;">
+    <div class="form-group">
+      <label>Status:</label>
+      <select formControlName="status" class="form-control">
         <option value="Plan to Watch">Plan to Watch</option>
         <option value="Watching">Watching</option>
         <option value="Completed">Completed</option>
@@ -45,24 +45,16 @@
       </select>
     </div>
 
-    <div>
-      <label>Rating (0-10):</label><br>
-      <input type="number" formControlName="rating" style="width: 100%; padding: 8px;">
+    <div class="form-group">
+      <label>Rating (0-10):</label>
+      <input type="number" formControlName="rating" class="form-control">
     </div>
 
-    <div style="display: flex; gap: 10px; margin-top: 10px;">
-
-      <button type="submit"
-              [disabled]="mediaForm.invalid"
-              [ngStyle]="{
-                'background': mediaForm.invalid ? '#9E9E9E' : '#2E7D32',
-                'cursor': mediaForm.invalid ? 'not-allowed' : 'pointer'
-              }"
-              style="padding: 10px 20px; color: white; border: none;">
-        Save
+    <div class="form-actions">
+      <button type="submit" [disabled]="mediaForm.invalid" class="btn-save">
+        {{ isEditMode ? 'Update' : 'Save' }}
       </button>
-
-      <button type="button" (click)="cancel()" style="padding: 10px 20px; background: #C62828; color: white; border: none; cursor: pointer;">Cancel</button>
+      <button type="button" (click)="cancel()" class="btn-cancel">Cancel</button>
     </div>
 
   </form>
