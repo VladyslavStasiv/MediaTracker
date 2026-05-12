@@ -4,6 +4,8 @@ import { MediaService, MediaItem } from '../../services/media';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../services/toast';
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-media-list',
@@ -24,7 +26,8 @@ export class MediaListComponent implements OnInit {
   sortDirection: 'asc' | 'desc' | '' = '';
   currentPage: number = 1;
   itemsPerPage: number = 5;
-
+  chart: any;
+  isDarkMode = false;
   showDeleteModal = false;
   itemToDeleteId: number | null = null;
 
@@ -68,12 +71,6 @@ export class MediaListComponent implements OnInit {
     return this.filteredMediaItems.slice(startIndex, startIndex + this.itemsPerPage);
   }
 
-  changePage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-    }
-  }
-
   get totalItems(): number {
     return this.mediaItems.length;
   }
@@ -95,12 +92,80 @@ export class MediaListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isDarkMode = localStorage.getItem('theme') === 'dark';
+    if (this.isDarkMode) {
+      document.body.classList.add('dark-theme');
+    }
+
     this.mediaService.getMediaItems().subscribe({
       next: (data) => {
         this.mediaItems = data;
         this.cdr.detectChanges();
+        this.renderChart();
       },
       error: (err) => console.error('Помилка:', err)
+    });
+  }
+
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  toggleTheme(): void {
+    this.isDarkMode = !this.isDarkMode;
+    if (this.isDarkMode) {
+      document.body.classList.add('dark-theme');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-theme');
+      localStorage.setItem('theme', 'light');
+    }
+    this.renderChart();
+  }
+
+  renderChart(): void {
+    Chart.defaults.color = this.isDarkMode ? '#e0e0e0' : '#666';
+    
+    const completed = this.mediaItems.filter(i => i.status === 'Completed').length;
+    const watching = this.mediaItems.filter(i => i.status === 'Watching').length;
+    const planToWatch = this.mediaItems.filter(i => i.status === 'Plan to Watch').length;
+
+    if (this.chart) {
+      this.chart.destroy();
+    }
+
+    this.chart = new Chart('statusChart', {
+      type: 'doughnut',
+      data: {
+        labels: ['Completed', 'Watching', 'Plan to Watch'],
+        datasets: [{
+          data: [completed, watching, planToWatch],
+          backgroundColor: ['#4CAF50', '#9C27B0', '#2196F3'],
+          borderWidth: 0,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              label: function(context: any) {
+                const label = context.label || '';
+                const value = context.raw;
+                const total = context.chart._metasets[context.datasetIndex].total;
+                const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+
+                return `${label}: ${value} (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
     });
   }
 
@@ -128,6 +193,7 @@ export class MediaListComponent implements OnInit {
         this.toastService.show('Failed to save progress. Check connection.', true);
       }
     });
+    this.renderChart();
   }
 
   sortBy(column: string): void {
@@ -213,5 +279,6 @@ export class MediaListComponent implements OnInit {
         }
       });
     }
+    this.renderChart();
   }
 }

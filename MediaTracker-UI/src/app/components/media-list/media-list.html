@@ -1,25 +1,37 @@
 <div class="list-container">
   <div class="dashboard">
-    <div class="stat-card">
-      <div class="stat-title">Total Items</div>
-      <div class="stat-value">{{ totalItems }}</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title">Total Items</div>
+        <div class="stat-value">{{ totalItems }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Completed</div>
+        <div class="stat-value">{{ completedItems }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Episodes Watched</div>
+        <div class="stat-value">{{ totalEpisodesWatched }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Average Rating</div>
+        <div class="stat-value">{{ averageRating }}<span>/10</span></div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-title">Completed</div>
-      <div class="stat-value">{{ completedItems }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-title">Episodes Watched</div>
-      <div class="stat-value">{{ totalEpisodesWatched }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-title">Average Rating</div>
-      <div class="stat-value">{{ averageRating }}<span>/10</span></div>
+
+    <div class="stat-card chart-card">
+      <div class="stat-title">Status Distribution</div>
+      <div class="chart-container">
+        <canvas id="statusChart"></canvas>
+      </div>
     </div>
   </div>
   <div class="toolbar">
     <div class="actions">
       <button class="btn-add" routerLink="/add">+ Add New</button>
+      <button class="btn-theme" (click)="toggleTheme()">
+        {{ isDarkMode ? '☀️ Light' : '🌙 Dark' }}
+      </button>
     </div>
 
     <div class="filters">
@@ -36,7 +48,8 @@
   </div>
 
   @if (filteredMediaItems.length > 0) {
-    <table class="media-table">
+    <div class="table-responsive">
+      <table class="media-table">
       <thead>
         <tr>
           <th>Cover</th>
@@ -123,7 +136,8 @@
         }
       </tbody>
     </table>
-    
+    </div>
+
     @if (totalPages > 1) {
       <div class="pagination">
         <button class="page-btn" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
