@@ -1,0 +1,47 @@
+@if (item) {
+  <div class="details-container">
+    <div class="details-header">
+      <a routerLink="/" class="btn-back">← Back to List</a>
+    </div>
+
+    <div class="details-card">
+      <div class="poster-section">
+        @if (item.imageUrl) {
+          <img [src]="item.imageUrl.startsWith('http') ? item.imageUrl : 'https://localhost:5156' + item.imageUrl"
+               class="large-cover"
+               alt="{{ item.title }} cover">
+        } @else {
+          <div class="placeholder-cover">No Image</div>
+        }
+      </div>
+
+      <div class="info-section">
+        <h1>{{ item.title }}</h1>
+
+        <div class="badges">
+          <span class="badge type">{{ item.type }}</span>
+          <span class="badge status" [ngClass]="item.status.toLowerCase().replace(' ', '-')">{{ item.status }}</span>
+          <span class="badge rating">⭐ {{ item.rating }}/10</span>
+          @for (genre of genres; track genre) {
+            <span class="badge genre">{{ genre }}</span>
+          }
+        </div>
+
+        <div class="synopsis-box">
+          <h3>Опис (UA)</h3>
+          <p>{{ synopsisUk }}</p>
+
+          <h3 style="margin-top: 25px;">Synopsis (EN)</h3>
+          <p>{{ synopsisEn }}</p>
+        </div>
+
+        <div class="progress-info">
+          <h3>Progress</h3>
+          <p>{{ item.episodesWatched }} / {{ item.totalEpisodes }} episodes watched</p>
+        </div>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="loading">Loading details...</div>
+}

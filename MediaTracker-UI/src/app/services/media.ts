@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 export interface MediaItem {
   id: number;
@@ -19,6 +20,7 @@ export interface MediaItem {
 export class MediaService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost:5156/api/mediaitems';
+  private readonly jikanCache = new Map<string, any>();
 
   getMediaItems(): Observable<MediaItem[]> {
     return this.http.get<MediaItem[]>(this.apiUrl);
@@ -49,6 +51,22 @@ export class MediaService {
 
   saveExternalImageUrl(id: number, imageUrl: string): Observable<{ imageUrl: string }> {
     return this.http.post<{ imageUrl: string }>(`${this.apiUrl}/${id}/image-url`, { imageUrl });
+  }
+
+  getJikanDetailsCached(title: string): Observable<any> {
+    if (this.jikanCache.has(title)) {
+      return of(this.jikanCache.get(title));
+    }
+
+    const url = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(title)}&limit=1`;
+    return this.http.get(url).pipe(
+      tap(data => this.jikanCache.set(title, data))
+    );
+  }
+
+  translateEnToUk(text: string): Observable<any> {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=uk&dt=t&q=${encodeURIComponent(text)}`;
+    return this.http.get(url);
   }
 
   deleteMediaItem(id: number): Observable<void> {

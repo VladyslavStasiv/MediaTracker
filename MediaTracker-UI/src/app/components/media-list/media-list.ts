@@ -20,16 +20,78 @@ export class MediaListComponent implements OnInit {
 
   searchQuery = '';
   filterStatus = 'All';
+  sortColumn: string = '';
+  sortDirection: 'asc' | 'desc' | '' = '';
+  currentPage: number = 1;
+  itemsPerPage: number = 5;
 
   showDeleteModal = false;
   itemToDeleteId: number | null = null;
 
   get filteredMediaItems(): MediaItem[] {
-    return this.mediaItems.filter(item => {
+    let filtered = this.mediaItems.filter(item => {
       const matchesSearch = item.title.toLowerCase().includes(this.searchQuery.toLowerCase());
       const matchesStatus = this.filterStatus === 'All' || item.status === this.filterStatus;
       return matchesSearch && matchesStatus;
     });
+
+    if (this.sortDirection !== '' && this.sortColumn !== '') {
+      filtered.sort((a: any, b: any) => {
+        let valA = a[this.sortColumn];
+        let valB = b[this.sortColumn];
+
+        valA ??= '';
+        valB ??= '';
+
+        if (typeof valA === 'number' && typeof valB === 'number') {
+          return this.sortDirection === 'asc' ? valA - valB : valB - valA;
+        }
+
+        const strA = valA.toString().toLowerCase();
+        const strB = valB.toString().toLowerCase();
+
+        if (strA < strB) return this.sortDirection === 'asc' ? -1 : 1;
+        if (strA > strB) return this.sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return filtered;
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredMediaItems.length / this.itemsPerPage);
+  }
+
+  get paginatedMediaItems(): MediaItem[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredMediaItems.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  get totalItems(): number {
+    return this.mediaItems.length;
+  }
+
+  get completedItems(): number {
+    return this.mediaItems.filter(item => item.status === 'Completed').length;
+  }
+
+  get totalEpisodesWatched(): number {
+    return this.mediaItems.reduce((sum, item) => sum + item.episodesWatched, 0);
+  }
+
+  get averageRating(): string {
+    const ratedItems = this.mediaItems.filter(item => item.rating && item.rating > 0);
+    if (ratedItems.length === 0) return '0.0';
+
+    const sum = ratedItems.reduce((acc, item) => acc + item.rating, 0);
+    return (sum / ratedItems.length).toFixed(1);
   }
 
   ngOnInit(): void {
@@ -66,6 +128,21 @@ export class MediaListComponent implements OnInit {
         this.toastService.show('Failed to save progress. Check connection.', true);
       }
     });
+  }
+
+  sortBy(column: string): void {
+    if (this.sortColumn === column) {
+      if (this.sortDirection === 'asc') this.sortDirection = 'desc';
+      else if (this.sortDirection === 'desc') this.sortDirection = '';
+      else this.sortDirection = 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+
+    if (this.sortDirection === '') {
+      this.sortColumn = '';
+    }
   }
 
   openDeleteModal(id: number): void {
@@ -132,7 +209,7 @@ export class MediaListComponent implements OnInit {
         error: (err) => {
           console.error('Error deleting item:', err);
           this.closeDeleteModal();
-          this.toastService.show('Item deleted successfully!');
+          this.toastService.show('Failed to delete item.', true);
         }
       });
     }

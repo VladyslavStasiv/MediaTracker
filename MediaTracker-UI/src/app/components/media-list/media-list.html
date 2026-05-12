@@ -1,15 +1,31 @@
 <div class="list-container">
-  <h2>My Media Tracker</h2>
-
+  <div class="dashboard">
+    <div class="stat-card">
+      <div class="stat-title">Total Items</div>
+      <div class="stat-value">{{ totalItems }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Completed</div>
+      <div class="stat-value">{{ completedItems }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Episodes Watched</div>
+      <div class="stat-value">{{ totalEpisodesWatched }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Average Rating</div>
+      <div class="stat-value">{{ averageRating }}<span>/10</span></div>
+    </div>
+  </div>
   <div class="toolbar">
     <div class="actions">
       <button class="btn-add" routerLink="/add">+ Add New</button>
     </div>
 
     <div class="filters">
-      <input type="text" [(ngModel)]="searchQuery" placeholder="Search by title..." class="filter-input">
+      <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="currentPage = 1" placeholder="Search by title..." class="filter-input">
 
-      <select [(ngModel)]="filterStatus" class="filter-select">
+      <select [(ngModel)]="filterStatus" (ngModelChange)="currentPage = 1" class="filter-select">
         <option value="All">All titles</option>
         <option value="Plan to Watch">Plan to Watch</option>
         <option value="Watching">Watching</option>
@@ -24,16 +40,37 @@
       <thead>
         <tr>
           <th>Cover</th>
-          <th>Title</th>
+          <th>
+            <button type="button" class="sort-btn" (click)="sortBy('title')">
+              Title
+              @if (sortColumn === 'title' && sortDirection !== '') {
+                <span class="sort-icon">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+              }
+            </button>
+          </th>
           <th>Type</th>
-          <th>Progress</th>
-          <th>Status</th>
-          <th>Rating</th>
+          <th>
+            <button type="button" class="sort-btn" (click)="sortBy('episodesWatched')">
+              Progress
+              @if (sortColumn === 'episodesWatched' && sortDirection !== '') {
+                <span class="sort-icon">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+              }
+            </button>
+          </th>
+           <th>Status</th>
+           <th>
+            <button type="button" class="sort-btn" (click)="sortBy('rating')">
+              Rating
+              @if (sortColumn === 'rating' && sortDirection !== '') {
+                <span class="sort-icon">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+              }
+            </button>
+          </th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        @for (item of filteredMediaItems; track item.id) {
+        @for (item of paginatedMediaItems; track item.id) {
           <tr>
             <td>
               <input type="file" #fileInput style="display: none" accept="image/*" (change)="onFileSelected($event, item.id)">
@@ -51,7 +88,11 @@
                 </div>
               }
             </td>
-            <td><b>{{ item.title }}</b></td>
+            <td>
+              <a [routerLink]="['/details', item.id]" class="title-link">
+                <b>{{ item.title }}</b>
+              </a>
+            </td>
             <td>{{ item.type }}</td>
             <td>
               <div class="progress-cell">
@@ -82,6 +123,20 @@
         }
       </tbody>
     </table>
+    
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+          &laquo; Prev
+        </button>
+
+        <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+
+        <button class="page-btn" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+          Next &raquo;
+        </button>
+      </div>
+    }
   } @else {
     <p>Your list is empty...</p>
   }
